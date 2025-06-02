@@ -1,4 +1,4 @@
-import logging
+from logger import Logger as custom_logger
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, List, Optional
 
@@ -27,8 +27,7 @@ class HTTPConnector:
         max_retries: int = 3,
         backoff_factor: float = 0.3,
         status_forcelist: Optional[List[int]] = None,
-        log_level: int = logging.INFO,
-        custom_handler: Optional[logging.Handler] = None,
+        log_level: int = "WARNING",
     ):
         """
         Initializes the HttpClient.
@@ -46,9 +45,7 @@ class HTTPConnector:
             custom_handler (Optional[logging.Handler]): Custom logging handler to add
                 (e.g., NewRelic handler)
         """
-        self.logger = self._create_logger(
-            level=log_level, custom_handler=custom_handler
-        )
+        self.logger = custom_logger.get_logger(log_level=log_level, caller=self)
         self.logger.info("Initializing HttpClient with base_url: %s", base_url)
 
         self.base_url = base_url.rstrip("/")
@@ -86,39 +83,6 @@ class HTTPConnector:
             backoff_factor,
             status_forcelist,
         )
-
-    def _create_logger(
-        self, level: int, custom_handler: Optional[logging.Handler] = None
-    ) -> logging.Logger:
-        """
-        Create a logging.Logger instance to be used for debuging purposes
-
-        Args:
-            level: Logging level
-            custom_handler: Optional custom logging handler (e.g., NewRelic handler)
-
-        Returns:
-            a logging.Logger instance designed to log the internal behavior of
-                the class
-        """
-        logger = logging.Logger(self.__class__.__name__)
-        logger.setLevel(level)
-        formatter = logging.Formatter(
-            "%(asctime)s level=%(levelname)-6s - %(name)s.%(funcName)s() M: %(message)s"
-        )
-
-        logger.propagate = False
-        logger.handlers.clear()
-
-        console_handler = logging.StreamHandler()
-        console_handler.setFormatter(formatter)
-        logger.addHandler(console_handler)
-
-        if custom_handler:
-            custom_handler.setFormatter(formatter)
-            logger.addHandler(custom_handler)
-
-        return logger
 
     def _get_headers(self, headers: Optional[Dict[str, str]] = None) -> Dict[str, str]:
         """
