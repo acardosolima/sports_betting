@@ -1,7 +1,7 @@
 import logging
 import unittest
 from io import StringIO
-from .logger import Logger
+from ...src.utils.logger import Logger
 
 
 class TestLogger(unittest.TestCase):
