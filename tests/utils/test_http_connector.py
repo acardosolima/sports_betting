@@ -248,6 +248,20 @@ class TestHTTPConnector:
         assert mock_request.call_count == 3
 
     @patch("requests.Session.request")
+    def test_post_multiple(self, mock_request):
+        """Test multiple POST requests"""
+        mock_response = self._create_mock_response(status_code=201)
+        mock_request.return_value = mock_response
+
+        endpoints = ["endpoint1", "endpoint2"]
+        data_list = [{"key1": "value1"}, {"key2": "value2"}]
+        responses = self.connector.post_multiple(endpoints, data_list=data_list)
+        
+        assert len(responses) == 2
+        assert all(r.status_code == 201 for r in responses)
+        assert mock_request.call_count == 2
+
+    @patch("requests.Session.request")
     def test_put_multiple(self, mock_request):
         """Test multiple PUT requests"""
         mock_response = self._create_mock_response()
