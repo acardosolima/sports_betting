@@ -1,4 +1,4 @@
-from logger import Logger as custom_logger
+from src.utils.logger import Logger as custom_logger
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, List, Optional
 
@@ -157,15 +157,26 @@ class HTTPConnector:
             self.logger.debug("Response headers: %s", dict(response.headers))
 
             if response.status_code >= 400:
-                self.logger.warning(
-                    "Request to %s/%s failed with status code %d: %s",
-                    self.base_url,
-                    endpoint,
-                    response.status_code,
-                    response.text,
-                )
+                if response.status_code in self.retry_strategy.status_forcelist:
+                    self.logger.warning(
+                        "Request to %s/%s failed with retryable status code %d: %s",
+                        self.base_url,
+                        endpoint,
+                        response.status_code,
+                        response.text,
+                    )
+                    # Let the retry mechanism handle it
+                    return response
+                else:
+                    self.logger.error(
+                        "Request to %s/%s failed with non-retryable status code %d: %s",
+                        self.base_url,
+                        endpoint,
+                        response.status_code,
+                        response.text,
+                    )
+                    response.raise_for_status()
 
-            response.raise_for_status()
             return response
 
         except requests.exceptions.RequestException as e:
