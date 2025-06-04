@@ -185,6 +185,56 @@ class TestHTTPConnector:
         )
 
     @patch("requests.Session.request")
+    def test_put_request(self, mock_request):
+        """Test PUT request"""
+        mock_response = self._create_mock_response(status_code=200)
+        mock_request.return_value = mock_response
+
+        data = {"key": "value"}
+        response = self.connector.put("test-endpoint", data=data)
+        assert response.status_code == 200
+        mock_request.assert_called_once_with(
+            method="PUT",
+            url=f"{self.connector.base_url}/test-endpoint",
+            headers=self.connector._get_headers(),
+            params=None,
+            data=data
+        )
+
+    @patch("requests.Session.request")
+    def test_patch_request(self, mock_request):
+        """Test PATCH request"""
+        mock_response = self._create_mock_response(status_code=200)
+        mock_request.return_value = mock_response
+
+        data = {"key": "value"}
+        response = self.connector.patch("test-endpoint", data=data)
+        assert response.status_code == 200
+        mock_request.assert_called_once_with(
+            method="PATCH",
+            url=f"{self.connector.base_url}/test-endpoint",
+            headers=self.connector._get_headers(),
+            params=None,
+            data=data
+        )
+
+    @patch("requests.Session.request")
+    def test_delete_request(self, mock_request):
+        """Test DELETE request"""
+        mock_response = self._create_mock_response(status_code=204)
+        mock_request.return_value = mock_response
+
+        response = self.connector.delete("test-endpoint")
+        assert response.status_code == 204
+        mock_request.assert_called_once_with(
+            method="DELETE",
+            url=f"{self.connector.base_url}/test-endpoint",
+            headers=self.connector._get_headers(),
+            params=None,
+            data=None
+        )
+
+    @patch("requests.Session.request")
     def test_parallel_requests(self, mock_request):
         """Test parallel requests"""
         mock_response = self._create_mock_response()
@@ -196,6 +246,68 @@ class TestHTTPConnector:
         assert len(responses) == 3
         assert all(r.status_code == 200 for r in responses)
         assert mock_request.call_count == 3
+
+    @patch("requests.Session.request")
+    def test_put_multiple(self, mock_request):
+        """Test multiple PUT requests"""
+        mock_response = self._create_mock_response()
+        mock_request.return_value = mock_response
+
+        endpoints = ["endpoint1", "endpoint2"]
+        data_list = [{"key1": "value1"}, {"key2": "value2"}]
+        responses = self.connector.put_multiple(endpoints, data_list=data_list)
+        
+        assert len(responses) == 2
+        assert all(r.status_code == 200 for r in responses)
+        assert mock_request.call_count == 2
+
+    @patch("requests.Session.request")
+    def test_patch_multiple(self, mock_request):
+        """Test multiple PATCH requests"""
+        mock_response = self._create_mock_response()
+        mock_request.return_value = mock_response
+
+        endpoints = ["endpoint1", "endpoint2"]
+        data_list = [{"key1": "value1"}, {"key2": "value2"}]
+        responses = self.connector.patch_multiple(endpoints, data_list=data_list)
+        
+        assert len(responses) == 2
+        assert all(r.status_code == 200 for r in responses)
+        assert mock_request.call_count == 2
+
+    @patch("requests.Session.request")
+    def test_delete_multiple(self, mock_request):
+        """Test multiple DELETE requests"""
+        mock_response = self._create_mock_response()
+        mock_request.return_value = mock_response
+
+        endpoints = ["endpoint1", "endpoint2"]
+        responses = self.connector.delete_multiple(endpoints)
+        
+        assert len(responses) == 2
+        assert all(r.status_code == 200 for r in responses)
+        assert mock_request.call_count == 2
+
+    @patch("requests.Session.request")
+    def test_request_multiple_with_headers_and_params(self, mock_request):
+        """Test _request_multiple with headers and params"""
+        mock_response = self._create_mock_response()
+        mock_request.return_value = mock_response
+
+        endpoints = ["endpoint1", "endpoint2"]
+        headers_list = [{"Header1": "value1"}, {"Header2": "value2"}]
+        params_list = [{"param1": "value1"}, {"param2": "value2"}]
+        
+        responses = self.connector._request_multiple(
+            "GET",
+            endpoints,
+            headers_list=headers_list,
+            params_list=params_list
+        )
+        
+        assert len(responses) == 2
+        assert all(r.status_code == 200 for r in responses)
+        assert mock_request.call_count == 2
 
     def test_close(self):
         """Test session close"""
