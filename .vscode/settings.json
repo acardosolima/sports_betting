@@ -3,5 +3,6 @@
         "tests"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "codeQL.createQuery.qlPackLocation": "c:\\Users\\99845435\\Documents\\sports_betting"
 }
