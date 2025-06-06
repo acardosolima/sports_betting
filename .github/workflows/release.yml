@@ -1,0 +1,64 @@
+name: Semantic Release
+
+# This workflow is triggered on pushes to the 'master' branch.
+# python-semantic-release will handle tagging and releasing based on commit messages.
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Required for creating releases and tags
+      contents: write
+      # Required for reading repository contents (e.g., commit history)
+      pull-requests: write # Not strictly needed for *release*, but good for some semantic-release features (e.g. PR comments)
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch the full history including tags. This is crucial for semantic-release
+          # to analyze the commit history and determine the next version.
+          fetch-depth: 0
+          # This token is used by semantic-release to push tags and create releases.
+          # It needs sufficient permissions (contents: write).
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Build and Semantic Release Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Install build backend (setuptools, setuptools_scm)
+          pip install setuptools build wheel setuptools_scm[toml]
+          # Install python-semantic-release
+          pip install python-semantic-release
+
+      - name: Display current Git state (for debugging)
+        run: |
+          git status
+          git log --oneline --graph --all
+          git tag --list
+
+      - name: Run Semantic Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          # The `semantic-release publish` command will:
+          # 1. Analyze commit messages since the last tag.
+          # 2. Determine if it's a major, minor, or patch release.
+          # 3. Create the new Git tag (e.g., v1.0.0, v1.1.0, v2.0.0).
+          # 4. Push the new tag to GitHub.
+          # 5. Build your package (if build_command is configured in pyproject.toml).
+          # 6. Create the GitHub Release with generated release notes.
+          # 7. Optionally upload assets to the release (if upload_to_release=true).
+          # 8. Optionally publish to PyPI (if upload_to_pypi=true).
+          semantic-release publish
