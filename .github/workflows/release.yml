@@ -52,13 +52,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          # The `semantic-release publish` command will:
-          # 1. Analyze commit messages since the last tag.
-          # 2. Determine if it's a major, minor, or patch release.
-          # 3. Create the new Git tag (e.g., v1.0.0, v1.1.0, v2.0.0).
-          # 4. Push the new tag to GitHub.
-          # 5. Build your package (if build_command is configured in pyproject.toml).
-          # 6. Create the GitHub Release with generated release notes.
-          # 7. Optionally upload assets to the release (if upload_to_release=true).
-          # 8. Optionally publish to PyPI (if upload_to_pypi=true).
-          semantic-release publish
+          semantic-release changelog --unreleased
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add CHANGELOG.md
+          git commit -m "docs? Update CHANGELOG.md [skip ci]"
+          git push
