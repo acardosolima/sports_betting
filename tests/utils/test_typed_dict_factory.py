@@ -207,3 +207,122 @@ class TestTypedDictFactory(unittest.TestCase):
 
         with self.assertRaises(Exception):
             str(TypedDictFactory())
+
+    def test_pop_method(self):
+        """
+        Test the pop method of ImmutableDict.
+
+        This method ensures that the pop method correctly raises a TypeError
+        since the dictionary is immutable.
+        """
+        new_factory = TypedDictFactory([("country", str)])
+        instance = new_factory.create_instance(country="US")
+
+        with self.assertRaises(TypeError):
+            instance.pop("country")
+
+    def test_pop_method_with_default(self):
+        """
+        Test the pop method of ImmutableDict with a default value.
+
+        This method ensures that the pop method correctly raises a TypeError
+        even when a default value is provided, since the dictionary is immutable.
+        """
+        new_factory = TypedDictFactory([("country", str)])
+        instance = new_factory.create_instance(country="US")
+
+        with self.assertRaises(TypeError):
+            instance.pop("country", "default_value")
+
+    def test_popitem_method(self):
+        """
+        Test the popitem method of ImmutableDict.
+
+        This method ensures that the popitem method correctly raises a TypeError
+        since the dictionary is immutable.
+        """
+        new_factory = TypedDictFactory([("country", str), ("vendor_id", int)])
+        instance = new_factory.create_instance(country="US", vendor_id=12345)
+
+        with self.assertRaises(TypeError):
+            instance.popitem()
+
+    def test_repr_method(self):
+        """
+        Test the __repr__ method of ImmutableDict.
+
+        This method ensures that the __repr__ method correctly returns
+        a string representation of the dictionary.
+        """
+        new_factory = TypedDictFactory([("country", str), ("vendor_id", int)])
+        instance = new_factory.create_instance(country="US", vendor_id=12345)
+
+        expected_repr = "{'country': 'US', 'vendor_id': 12345}"
+        self.assertEqual(repr(instance), expected_repr)
+
+    def test_str_method(self):
+        """
+        Test the __str__ method of ImmutableDict.
+
+        This method ensures that the __str__ method correctly returns
+        a string representation of the dictionary.
+        """
+        new_factory = TypedDictFactory([("country", str), ("vendor_id", int)])
+        instance = new_factory.create_instance(country="US", vendor_id=12345)
+
+        expected_str = "{'country': 'US', 'vendor_id': 12345}"
+        self.assertEqual(str(instance), expected_str)
+
+    def test_delitem_method(self):
+        """
+        Test the __delitem__ method of ImmutableDict.
+
+        This method ensures that the __delitem__ method correctly raises a TypeError
+        since the dictionary is immutable.
+        """
+        new_factory = TypedDictFactory([("country", str)])
+        instance = new_factory.create_instance(country="US")
+
+        with self.assertRaises(TypeError):
+            del instance["country"]
+
+    def test_clear_method(self):
+        """
+        Test the clear method of ImmutableDict.
+
+        This method ensures that the clear method correctly raises a TypeError
+        since the dictionary is immutable.
+        """
+        new_factory = TypedDictFactory([("country", str), ("vendor_id", int)])
+        instance = new_factory.create_instance(country="US", vendor_id=12345)
+
+        with self.assertRaises(TypeError):
+            instance.clear()
+
+    def test_immutable_behavior_consistency(self):
+        """
+        Test that all modification methods consistently raise TypeError.
+
+        This method ensures that all methods that could modify the dictionary
+        consistently raise TypeError, maintaining the immutable behavior.
+        """
+        new_factory = TypedDictFactory([("country", str), ("vendor_id", int)])
+        instance = new_factory.create_instance(country="US", vendor_id=12345)
+
+        # Test all modification methods
+        modification_methods = [
+            lambda: instance.pop("country"),
+            lambda: instance.pop("country", "default"),
+            lambda: instance.popitem(),
+            lambda: instance.clear(),
+            lambda: instance.__delitem__("country"),
+            lambda: instance.__setitem__("new_key", "new_value"),
+            lambda: instance.update({"new_key": "new_value"}),
+        ]
+
+        for method in modification_methods:
+            with self.assertRaises(TypeError):
+                method()
+
+        # Verify the original data is unchanged
+        self.assertDictEqual(instance, {"country": "US", "vendor_id": 12345})
