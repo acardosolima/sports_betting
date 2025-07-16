@@ -56,5 +56,15 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git add CHANGELOG.md
-          git commit -m "docs? Update CHANGELOG.md [skip ci]"
-          git push
+          git commit -m "Docs: Update CHANGELOG.md [skip ci]"
+
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "Docs: Update CHANGELOG.md [skip ci]"
+          body: "Auto-generated changelog update"
+          commit-message: "Docs: Update CHANGELOG.md [skip ci]"
+          base: "master"
+          branch: "changelog-update"
+          token: ${{ secrets.GITHUB_TOKEN }}
