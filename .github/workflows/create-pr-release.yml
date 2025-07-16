@@ -1,0 +1,32 @@
+name: Create PR for changelog
+
+on:
+  workflow_run:
+    workflows: ["Semantic Release"]
+    types:
+      - completed
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: changelog-update
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "Docs: Update CHANGELOG.md [skip ci]"
+          body: "Auto-generated changelog update"
+          commit-message: "Docs: Update CHANGELOG.md [skip ci]"
+          base: "master"
+          branch: "changelog-update"
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,7 +1,5 @@
 name: Semantic Release
 
-# This workflow is triggered on pushes to the 'master' branch.
-# python-semantic-release will handle tagging and releasing based on commit messages.
 on:
   push:
     branches:
@@ -12,20 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      # Required for creating releases and tags
       contents: write
-      # Required for reading repository contents (e.g., commit history)
-      pull-requests: write # Not strictly needed for *release*, but good for some semantic-release features (e.g. PR comments)
+      pull-requests: write
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          # Fetch the full history including tags. This is crucial for semantic-release
-          # to analyze the commit history and determine the next version.
           fetch-depth: 0
-          # This token is used by semantic-release to push tags and create releases.
-          # It needs sufficient permissions (contents: write).
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python Environment
@@ -36,9 +28,7 @@ jobs:
       - name: Install Build and Semantic Release Dependencies
         run: |
           python -m pip install --upgrade pip
-          # Install build backend (setuptools, setuptools_scm)
           pip install setuptools build wheel setuptools_scm[toml]
-          # Install python-semantic-release
           pip install python-semantic-release
 
       - name: Display current Git state (for debugging)
@@ -50,21 +40,16 @@ jobs:
       - name: Run Semantic Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           semantic-release changelog 
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git add CHANGELOG.md
-          git commit -m "Docs: Update CHANGELOG.md [skip ci]"
+          git commit -m "Docs: Update CHANGELOG.md [skip ci]" || echo "No changes to commit"
 
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          title: "Docs: Update CHANGELOG.md [skip ci]"
-          body: "Auto-generated changelog update"
-          commit-message: "Docs: Update CHANGELOG.md [skip ci]"
-          base: "master"
-          branch: "changelog-update"
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push changelog update to a new branch
+        if: success() && steps.Run_Semantic_Release.outcome == 'success'
+        run: |
+          git checkout -b changelog-update
+          git push origin changelog-update --force
