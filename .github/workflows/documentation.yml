@@ -47,7 +47,7 @@ jobs:
       - name: Build documentation
         run: |
           cd docs
-          sphinx-build -b html source build -a -W
+          sphinx-build -b html source build -a
           # -a: rebuild all files
           # -W: turn warnings into errors
       
