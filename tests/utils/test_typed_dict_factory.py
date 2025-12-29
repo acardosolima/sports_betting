@@ -273,6 +273,19 @@ class TestTypedDictFactory(unittest.TestCase):
         expected_str = "{'country': 'US', 'vendor_id': 12345}"
         self.assertEqual(str(instance), expected_str)
 
+    def test_str_method_neq(self):
+        """
+        Test the __str__ method of ImmutableDict.
+
+        This method ensures that the __str__ method correctly returns
+        a string representation of the dictionary.
+        """
+        new_factory = TypedDictFactory([("country", str), ("vendor_id", int)])
+        instance = new_factory.create_instance(country="US", vendor_id=12345)
+
+        incorrect_str = "{'country': 'US', 'vendor_id': 123456}"
+        self.assertNotEqual(str(instance), incorrect_str)
+
     def test_delitem_method(self):
         """
         Test the __delitem__ method of ImmutableDict.
