@@ -1,31 +1,64 @@
-name: documentation
+name: Deploy Sphinx Documentation
 
 on:
   push:
-    branches:
-      - master
+    branches: [ "master" ]
+    paths:
+      - 'docs/**'
+      - '**.py'
+      - '.github/workflows/documentation.yml'
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  docs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for proper versioning
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
       - name: Install dependencies
         run: |
-          pip install sphinx sphinx_rtd_theme myst_parser
-      - name: Sphinx build
+          pip install --upgrade pip
+          pip install sphinx sphinx-rtd-theme myst-parser
+          # Se tiver requirements.txt:
+          # pip install -r docs/requirements.txt
+      
+      - name: Build documentation
         run: |
           cd docs
-          sphinx-build -b html source build/html
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+          sphinx-build -b html source build -a -W
+          # -a: rebuild all files
+          # -W: turn warnings into errors
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          publish_branch: gh-pages
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/build/html
-          force_orphan: true
+          path: 'docs/build'
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
