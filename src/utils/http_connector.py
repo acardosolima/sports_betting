@@ -10,7 +10,6 @@ from urllib3.util.retry import Retry
 class HTTPConnector:
     """
     A class to handle HTTP requests, including parallel requests.
-    TODO: add retry logic to the request method
 
     Attributes:
         base_url (str): The base URL for the API.
