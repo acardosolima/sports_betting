@@ -1,5 +1,18 @@
+import sys
 import pytest
 from unittest.mock import MagicMock, patch
+
+# Mocking MLFlow modules before importing
+mock_mlflow = MagicMock()
+mock_mlflow.tracking.MlflowClient = MagicMock
+mock_mlflow.pyfunc.PyFuncModel = MagicMock
+sys.modules['mlflow'] = mock_mlflow
+sys.modules['mlflow.tracking'] = mock_mlflow.tracking
+sys.modules['mlflow.sklearn'] = mock_mlflow.sklearn
+sys.modules['mlflow.pytorch'] = mock_mlflow.pytorch
+sys.modules['mlflow.tensorflow'] = mock_mlflow.tensorflow
+sys.modules['mlflow.pyfunc'] = mock_mlflow.pyfunc
+
 from src.utils.mlflow_model_manager import MLflowModelManager
 
 class TestMLflowModelManager:
