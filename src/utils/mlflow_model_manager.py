@@ -152,12 +152,12 @@ class MLflowModelManager:
             
             if artifacts:
                 for name, path in artifacts.items():
-                    mlflow.log_artifact(path, artifact_path=name)
+                    mlflow.log_artifact(path, name=name)
             
             if model_type == "sklearn":
                 mlflow.sklearn.log_model(
                     model,
-                    artifact_path="model",
+                    name="model",
                     signature=signature,
                     input_example=input_example,
                     pip_requirements=pip_requirements
@@ -166,7 +166,7 @@ class MLflowModelManager:
             elif model_type == "pytorch":
                 mlflow.pytorch.log_model(
                     model,
-                    artifact_path="model",
+                    name="model",
                     signature=signature,
                     input_example=input_example,
                     pip_requirements=pip_requirements,
@@ -176,7 +176,7 @@ class MLflowModelManager:
             elif model_type == "tensorflow":
                 mlflow.tensorflow.log_model(
                     model,
-                    artifact_path="model",
+                    name="model",
                     signature=signature,
                     input_example=input_example,
                     pip_requirements=pip_requirements
@@ -184,7 +184,7 @@ class MLflowModelManager:
             
             elif model_type == "pyfunc":
                 mlflow.pyfunc.log_model(
-                    artifact_path="model",
+                    name="model",
                     python_model=model,
                     signature=signature,
                     input_example=input_example,
@@ -196,7 +196,7 @@ class MLflowModelManager:
                 import pickle
                 with open("/tmp/model.pkl", "wb") as f:
                     pickle.dump(model, f)
-                mlflow.log_artifact("/tmp/model.pkl", artifact_path="model")
+                mlflow.log_artifact("/tmp/model.pkl", name="model")
             
             else:
                 raise ValueError(
