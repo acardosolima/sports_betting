@@ -6,6 +6,9 @@ authors = [
     {name = "Adriano Lima",email = "adrianocardoso1991@gmail.com"}
 ]
 readme = "README.md"
+packages = [
+    { include = "ssa", from = "src" }
+]
 requires-python = ">=3.13, <4.0"
 dependencies = [
     "pytest (==8.3.5)",
