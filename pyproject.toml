@@ -1,5 +1,5 @@
 [project]
-name = "SSA"
+name = "SSA-sports-statistics-analysis"
 version = "0.0.1"
 description = "Sports statistics prediction system for betting using machine learning"
 authors = [
@@ -29,3 +29,10 @@ dependencies = [
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:tool.poetry.version"]
+branch = "master"
+upload_to_release = true
+build_command = "pip install poetry && poetry build"
