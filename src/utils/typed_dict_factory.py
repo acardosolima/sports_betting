@@ -32,11 +32,11 @@ class ImmutableDict(dict):
 
     def update(self, *args, **kwargs):
         """Raises TypeError as this dictionary is immutable.
-        
+
         Args:
             \*args: Variable length argument list (not supported)
             \*\*kwargs: Arbitrary keyword arguments (not supported)
-        
+
         Raises:
             TypeError: Always raises this error as the dictionary is immutable
         """
@@ -44,11 +44,11 @@ class ImmutableDict(dict):
 
     def pop(self, key, default=None):
         """Raises TypeError as this dictionary is immutable.
-        
+
         Args:
             key: The key to remove (not supported)
             default: The default value to return if key is not found (not supported)
-        
+
         Raises:
             TypeError: Always raises this error as the dictionary is immutable
         """
@@ -106,8 +106,7 @@ class TypedDictFactory:
     def __str__(self) -> str:
         try:
             return (
-                "TypedDictFactory with "
-                f"{str(self._required_attributes)} attributes"
+                "TypedDictFactory with " f"{str(self._required_attributes)} attributes"
             )
         except Exception:
             return "TypedDictFactory with no attributes"
