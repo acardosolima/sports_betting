@@ -29,14 +29,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       
+      - name: Install Poetry
+        run: pip install poetry
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: 'poetry'
-
-      - name: Install Poetry
-        run: pip install poetry
       
       - name: Install dependencies
         run: poetry install --only docs --no-interaction --no-root
