@@ -42,3 +42,5 @@ version_toml = ["pyproject.toml:tool.poetry.version"]
 branch = "master"
 upload_to_release = true
 build_command = "poetry build"
+major_on_zero = false
+allow_zero_version = true
