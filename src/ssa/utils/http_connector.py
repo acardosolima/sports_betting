@@ -1,4 +1,4 @@
-from src.utils.logger import Logger as custom_logger
+from src.ssa.utils.logger import Logger as custom_logger
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, List, Optional
 
