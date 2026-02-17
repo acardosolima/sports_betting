@@ -39,15 +39,14 @@ jobs:
       
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          pip install sphinx sphinx-rtd-theme myst-parser
-          # Se tiver requirements.txt:
-          # pip install -r docs/requirements.txt
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install --only docs --no-interaction --no-root
       
       - name: Build documentation
         run: |
           cd docs
-          sphinx-build -b html source build -a
+          poetry run sphinx-build -b html source build -a
           # -a: rebuild all files
           # -W: turn warnings into errors
       
