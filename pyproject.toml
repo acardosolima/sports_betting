@@ -1,33 +1,36 @@
-[project]
-name = "SSA-sports-statistics-analysis"
+[tool.poetry]
+name = "ssa-sports-statistics-analysis"
 version = "0.0.1"
 description = "Sports statistics prediction system for betting using machine learning"
-authors = [
-    {name = "Adriano Lima",email = "adrianocardoso1991@gmail.com"}
-]
+authors = ["Adriano Lima <adrianocardoso1991@gmail.com>"]
 readme = "README.md"
 packages = [
     { include = "ssa", from = "src" }
 ]
-requires-python = ">=3.13, <4.0"
-dependencies = [
-    "pytest (==8.3.5)",
-    "pytest-cov (==6.1.1)",
-    "black (==25.1.0)",
-    "isort (==6.0.1)",
-    "setuptools (==80.9.0)",
-    "codecov (==2.1.13)",
-    "coverage (==7.8.2)",
-    "sphinx-markdown-builder (==0.6.7)",
-    "sphinx (==8.1.3)",
-    "requests (==2.32.3)",
-    "mlflow (==3.5.1)",
-    "river (==0.23.0)",
-    "pandas (==2.2.3)",
-    "numpy (<2.4.0)",
-    "tensorflow (==2.20.0)"
-]
 
+[tool.poetry.dependencies]
+python = "^3.13"
+requests = "2.32.3"
+mlflow = "3.5.1"
+river = "0.23.0"
+pandas = "2.2.3"
+numpy = "<2.4.0"
+tensorflow = "2.20.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "25.1.0"
+isort = "6.0.1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "8.3.5"
+pytest-cov = "6.1.1"
+codecov = "2.1.13"
+coverage = "7.8.2"
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "8.1.3"
+sphinx-markdown-builder = "0.6.7"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
