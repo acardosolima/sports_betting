@@ -1,7 +1,7 @@
 import pytest
 import requests
 from unittest.mock import Mock, patch, MagicMock
-from src.utils.http_connector import HTTPConnector
+from src.ssa.utils.http_connector import HTTPConnector
 from requests.adapters import Retry, HTTPAdapter
 
 class TestHTTPConnector:

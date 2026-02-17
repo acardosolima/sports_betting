@@ -13,7 +13,7 @@ sys.modules['mlflow.pytorch'] = mock_mlflow.pytorch
 sys.modules['mlflow.tensorflow'] = mock_mlflow.tensorflow
 sys.modules['mlflow.pyfunc'] = mock_mlflow.pyfunc
 
-from src.utils.mlflow_model_manager import MLflowModelManager
+from src.ssa.utils.mlflow_model_manager import MLflowModelManager
 
 class TestMLflowModelManager:
     
@@ -24,8 +24,8 @@ class TestMLflowModelManager:
         Targeting the 'src' namespace to match project structure.
         """
         # Patching the logger and the MlflowClient class
-        with patch('src.utils.mlflow_model_manager.custom_logger') as mock_log_class, \
-             patch('src.utils.mlflow_model_manager.MlflowClient') as mock_client_class, \
+        with patch('src.ssa.utils.mlflow_model_manager.custom_logger') as mock_log_class, \
+             patch('src.ssa.utils.mlflow_model_manager.MlflowClient') as mock_client_class, \
              patch('mlflow.set_tracking_uri') as mock_uri, \
              patch('mlflow.set_experiment') as mock_exp, \
              patch('mlflow.create_experiment', return_value="exp_id_123"), \

@@ -1,4 +1,4 @@
-from src.utils.logger import Logger as custom_logger
+from src.ssa.utils.logger import Logger as custom_logger
 from mlflow.tracking import MlflowClient
 from typing import Any, Dict, Optional, List
 from mlflow.pyfunc import PyFuncModel
