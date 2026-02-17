@@ -25,7 +25,8 @@ class Logger:
             logging.Logger: A configured logging.Logger instance
         """
         return Logger._create_logger(
-            level=log_level, custom_handler=None, caller=caller)
+            level=log_level, custom_handler=None, caller=caller
+        )
 
     @staticmethod
     def _create_logger(
