@@ -28,27 +28,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch all history for proper versioning
       
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-          cache: 'pip'
+          cache: 'poetry'
+
+      - name: Install Poetry
+        run: pip install poetry
       
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-          poetry install --only docs --no-interaction --no-root
+        run: poetry install --only docs --no-interaction --no-root
       
       - name: Build documentation
         run: |
           cd docs
           poetry run sphinx-build -b html source build -a
-          # -a: rebuild all files
-          # -W: turn warnings into errors
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
