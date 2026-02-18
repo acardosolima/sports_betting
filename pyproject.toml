@@ -46,7 +46,7 @@ major_on_zero = false
 allow_zero_version = true
 
 [tool.ruff]
-line-length = 88
+line-length = 110
 target-version = "py313"
 
 [tool.ruff.lint]
