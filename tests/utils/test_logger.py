@@ -1,7 +1,8 @@
 import logging
 import unittest
 from io import StringIO
-from src.ssa.utils.logger import Logger
+
+from ssa.utils.logger import Logger
 
 
 class TestLogger(unittest.TestCase):
@@ -26,6 +27,7 @@ class TestLogger(unittest.TestCase):
 
     def test_caller_naming(self):
         """Test logger naming based on caller class."""
+
         class TestClass:
             pass
 
@@ -34,23 +36,17 @@ class TestLogger(unittest.TestCase):
 
     def test_custom_handler(self):
         """Test logger with custom handler."""
-        logger = Logger._create_logger(
-            level=logging.INFO,
-            custom_handler=self.handler
-        )
+        logger = Logger._create_logger(level=logging.INFO, custom_handler=self.handler)
         self.assertEqual(len(logger.handlers), 2)
         self.assertIn(self.handler, logger.handlers)
 
     def test_logging_output(self):
         """Test actual logging output format."""
         # Create a logger with our test handler
-        logger = Logger._create_logger(
-            level=logging.INFO,
-            custom_handler=self.handler
-        )
+        logger = Logger._create_logger(level=logging.INFO, custom_handler=self.handler)
         test_message = "Test log message"
         logger.info(test_message)
-        
+
         # Get the output
         output = self.log_output.getvalue()
         self.assertIn(test_message, output)
@@ -64,10 +60,7 @@ class TestLogger(unittest.TestCase):
 
     def test_multiple_handlers(self):
         """Test that multiple handlers can be added."""
-        logger = Logger._create_logger(
-            level=logging.INFO,
-            custom_handler=self.handler
-        )
+        logger = Logger._create_logger(level=logging.INFO, custom_handler=self.handler)
         second_handler = logging.StreamHandler(StringIO())
         logger.addHandler(second_handler)
         self.assertEqual(len(logger.handlers), 3)

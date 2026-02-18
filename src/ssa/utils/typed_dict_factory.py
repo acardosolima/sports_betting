@@ -1,21 +1,20 @@
 # Copyright (C) 2026 Adriano Lima
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 from dataclasses import dataclass
-from typing import Set, Tuple
 
 
 @dataclass(frozen=True)
@@ -76,7 +75,7 @@ class ImmutableDict(dict):
 class TypedDictFactory:
     """A class that abstracts a dictionary with a specified format."""
 
-    def __init__(self, required_attributes: Set[Tuple[str, type]]):
+    def __init__(self, required_attributes: set[tuple[str, type]]):
         """
         Initializes the TypedDictFactory with a set of required
         attributes and their types.
@@ -105,7 +104,6 @@ class TypedDictFactory:
                 and isinstance(attr[1], type)
                 for attr in required_attributes
             ):
-
                 self._logger.debug("Valid required attributes: %s", required_attributes)
                 self._required_attributes = required_attributes
 
@@ -120,9 +118,7 @@ class TypedDictFactory:
 
     def __str__(self) -> str:
         try:
-            return (
-                "TypedDictFactory with " f"{str(self._required_attributes)} attributes"
-            )
+            return f"TypedDictFactory with {self._required_attributes!s} attributes"
         except Exception:
             return "TypedDictFactory with no attributes"
 
@@ -145,7 +141,6 @@ class TypedDictFactory:
             # For each item in the required attributes, checks if it
             # was passed in and its type matches the expected type
             for attr, attr_type in self._required_attributes:
-
                 self._logger.debug(
                     "Checking attribute %s with type %s",
                     attr,

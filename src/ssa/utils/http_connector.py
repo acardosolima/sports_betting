@@ -1,25 +1,26 @@
 # Copyright (C) 2026 Adriano Lima
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from src.ssa.utils.logger import Logger as custom_logger
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+
+from ssa.utils.logger import Logger as custom_logger
 
 
 class HTTPConnector:
@@ -36,11 +37,11 @@ class HTTPConnector:
     def __init__(
         self,
         base_url: str,
-        headers: Optional[Dict[str, str]] = None,
-        auth_token: Optional[str] = None,
+        headers: dict[str, str] | None = None,
+        auth_token: str | None = None,
         max_retries: int = 3,
         backoff_factor: float = 0.3,
-        status_forcelist: Optional[List[int]] = None,
+        status_forcelist: list[int] | None = None,
         log_level: int = "WARNING",
     ):
         """
@@ -91,14 +92,13 @@ class HTTPConnector:
         self.session.mount("https://", adapter)
 
         self.logger.debug(
-            "Retry configuration: max_retries=%d, backoff_factor=%f, "
-            "status_forcelist=%s",
+            "Retry configuration: max_retries=%d, backoff_factor=%f, status_forcelist=%s",
             max_retries,
             backoff_factor,
             status_forcelist,
         )
 
-    def _get_headers(self, headers: Optional[Dict[str, str]] = None) -> Dict[str, str]:
+    def _get_headers(self, headers: dict[str, str] | None = None) -> dict[str, str]:
         """
         Generates the headers for the requests.
 
@@ -124,9 +124,9 @@ class HTTPConnector:
         self,
         method: str,
         endpoint: str,
-        params: Optional[Dict[str, Any]] = None,
-        data: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
+        params: dict[str, Any] | None = None,
+        data: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
     ) -> requests.Response:
         """
         Makes an HTTP request to the specified endpoint, with automatic retry functionality.
@@ -194,16 +194,14 @@ class HTTPConnector:
             return response
 
         except requests.exceptions.RequestException as e:
-            self.logger.error(
-                "Request to %s/%s failed: %s", self.base_url, endpoint, str(e)
-            )
+            self.logger.error("Request to %s/%s failed: %s", self.base_url, endpoint, str(e))
             raise
 
     def get(
         self,
         endpoint: str,
-        headers: Optional[Dict[str, str]] = None,
-        params: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> requests.Response:
         """
         Makes a GET request to the specified endpoint.
@@ -220,8 +218,8 @@ class HTTPConnector:
     def post(
         self,
         endpoint: str,
-        headers: Optional[Dict[str, str]] = None,
-        data: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        data: dict[str, Any] | None = None,
     ) -> requests.Response:
         """
         Makes a POST request to the specified endpoint.
@@ -238,8 +236,8 @@ class HTTPConnector:
     def put(
         self,
         endpoint: str,
-        headers: Optional[Dict[str, str]] = None,
-        data: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        data: dict[str, Any] | None = None,
     ) -> requests.Response:
         """
         Makes a PUT request to the specified endpoint.
@@ -256,8 +254,8 @@ class HTTPConnector:
     def patch(
         self,
         endpoint: str,
-        headers: Optional[Dict[str, str]] = None,
-        data: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        data: dict[str, Any] | None = None,
     ) -> requests.Response:
         """
         Makes a PATCH request to the specified endpoint.
@@ -274,8 +272,8 @@ class HTTPConnector:
     def delete(
         self,
         endpoint: str,
-        headers: Optional[Dict[str, str]] = None,
-        data: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        data: dict[str, Any] | None = None,
     ) -> requests.Response:
         """
         Makes a DELETE request to the specified endpoint.
@@ -292,11 +290,11 @@ class HTTPConnector:
     def _request_multiple(
         self,
         method: str,
-        endpoints: List[str],
-        headers_list: Optional[List[Dict[str, str]]] = None,
-        params_list: Optional[List[Dict[str, Any]]] = None,
-        data_list: Optional[List[Dict[str, Any]]] = None,
-    ) -> List[requests.Response]:
+        endpoints: list[str],
+        headers_list: list[dict[str, str]] | None = None,
+        params_list: list[dict[str, Any]] | None = None,
+        data_list: list[dict[str, Any]] | None = None,
+    ) -> list[requests.Response]:
         """
         Makes multiple HTTP requests in parallel.
 
@@ -325,16 +323,14 @@ class HTTPConnector:
         with ThreadPoolExecutor() as executor:
             futures = {
                 executor.submit(self.request, method, endpoint, data=data): endpoint
-                for endpoint, data in zip(endpoints, data_list)
+                for endpoint, data in zip(endpoints, data_list, strict=True)
             }
             for future in as_completed(futures):
                 endpoint = futures[future]
                 try:
                     response = future.result()
                     responses.append(response)
-                    self.logger.debug(
-                        "Successfully completed %s request to: %s", method, endpoint
-                    )
+                    self.logger.debug("Successfully completed %s request to: %s", method, endpoint)
                 except Exception as e:
                     self.logger.error(
                         "Failed to complete %s request to %s: %s",
@@ -347,17 +343,19 @@ class HTTPConnector:
 
     def get_multiple(
         self,
-        endpoints: List[str],
-        headers_list: Optional[List[Dict[str, str]]] = None,
-        params_list: Optional[List[Dict[str, Any]]] = None,
-    ) -> List[requests.Response]:
+        endpoints: list[str],
+        headers_list: list[dict[str, str]] | None = None,
+        params_list: list[dict[str, Any]] | None = None,
+    ) -> list[requests.Response]:
         """
         Makes multiple GET requests in parallel.
 
         Args:
             endpoints (List[str]): A list of endpoints to send the GET requests to.
-            headers_list (Optional[List[Dict[str, str]]]): A list of headers dictionaries for each request.
-            params_list (Optional[List[Dict[str, Any]]]): A list of query parameter dictionaries for each request.
+            headers_list (Optional[List[Dict[str, str]]]): A list of headers
+                dictionaries for each request.
+            params_list (Optional[List[Dict[str, Any]]]): A list of query parameter
+                dictionaries for each request.
 
         Returns:
             List[requests.Response]: A list of responses from the server.
@@ -366,10 +364,10 @@ class HTTPConnector:
 
     def post_multiple(
         self,
-        endpoints: List[str],
-        headers_list: Optional[List[Dict[str, str]]] = None,
-        data_list: Optional[List[Dict[str, Any]]] = None,
-    ) -> List[requests.Response]:
+        endpoints: list[str],
+        headers_list: list[dict[str, str]] | None = None,
+        data_list: list[dict[str, Any]] | None = None,
+    ) -> list[requests.Response]:
         """
         Makes multiple POST requests in parallel.
 
@@ -385,10 +383,10 @@ class HTTPConnector:
 
     def put_multiple(
         self,
-        endpoints: List[str],
-        headers_list: Optional[List[Dict[str, str]]] = None,
-        data_list: Optional[List[Dict[str, Any]]] = None,
-    ) -> List[requests.Response]:
+        endpoints: list[str],
+        headers_list: list[dict[str, str]] | None = None,
+        data_list: list[dict[str, Any]] | None = None,
+    ) -> list[requests.Response]:
         """
         Makes multiple PUT requests in parallel.
 
@@ -404,10 +402,10 @@ class HTTPConnector:
 
     def patch_multiple(
         self,
-        endpoints: List[str],
-        headers_list: Optional[List[Dict[str, str]]] = None,
-        data_list: Optional[List[Dict[str, Any]]] = None,
-    ) -> List[requests.Response]:
+        endpoints: list[str],
+        headers_list: list[dict[str, str]] | None = None,
+        data_list: list[dict[str, Any]] | None = None,
+    ) -> list[requests.Response]:
         """
         Makes multiple PATCH requests in parallel.
 
@@ -423,10 +421,10 @@ class HTTPConnector:
 
     def delete_multiple(
         self,
-        endpoints: List[str],
-        headers_list: Optional[List[Dict[str, str]]] = None,
-        data_list: Optional[List[Dict[str, Any]]] = None,
-    ) -> List[requests.Response]:
+        endpoints: list[str],
+        headers_list: list[dict[str, str]] | None = None,
+        data_list: list[dict[str, Any]] | None = None,
+    ) -> list[requests.Response]:
         """
         Makes multiple DELETE requests in parallel.
 

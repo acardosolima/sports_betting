@@ -8,28 +8,29 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../src'))
 
-project = 'Sports Betting'
-copyright = '2025, Adriano Lima'
-author = 'Adriano Lima'
-release = '0.0.1'
+sys.path.insert(0, os.path.abspath("../../src"))
+
+project = "SSA - Sports Statistics Analysis"
+copyright = "2026, Adriano Lima"
+author = "Adriano Lima"
+release = "0.1.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',  # For Google and NumPy style docstrings
-    'sphinx.ext.viewcode'   # Optional: to include links to source code
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",  # For Google and NumPy style docstrings
+    "sphinx.ext.viewcode",  # Optional: to include links to source code
 ]
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
-html_static_path = ['_static']
+html_theme = "alabaster"
+html_static_path = ["_static"]
