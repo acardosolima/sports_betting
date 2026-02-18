@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from src.ssa.utils.http_connector import HTTPConnector
+from ssa.utils.http_connector import HTTPConnector
 
 
 class TestHTTPConnector:

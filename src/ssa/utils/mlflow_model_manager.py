@@ -24,7 +24,7 @@ import mlflow.tensorflow
 from mlflow.pyfunc import PyFuncModel
 from mlflow.tracking import MlflowClient
 
-from src.ssa.utils.logger import Logger as custom_logger
+from ssa.utils.logger import Logger as custom_logger
 
 
 class MLflowModelManager:

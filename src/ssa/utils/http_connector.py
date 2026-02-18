@@ -20,7 +20,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from src.ssa.utils.logger import Logger as custom_logger
+from ssa.utils.logger import Logger as custom_logger
 
 
 class HTTPConnector:

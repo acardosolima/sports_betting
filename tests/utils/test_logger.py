@@ -2,7 +2,7 @@ import logging
 import unittest
 from io import StringIO
 
-from src.ssa.utils.logger import Logger
+from ssa.utils.logger import Logger
 
 
 class TestLogger(unittest.TestCase):

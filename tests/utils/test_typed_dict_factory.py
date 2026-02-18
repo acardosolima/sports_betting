@@ -1,6 +1,6 @@
 import unittest
 
-from src.ssa.utils.typed_dict_factory import ImmutableDict, TypedDictFactory
+from ssa.utils.typed_dict_factory import ImmutableDict, TypedDictFactory
 
 
 class TestTypedDictFactory(unittest.TestCase):
