@@ -1,29 +1,30 @@
 # Copyright (C) 2026 Adriano Lima
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from src.ssa.utils.logger import Logger as custom_logger
-from mlflow.tracking import MlflowClient
-from typing import Any, Dict, Optional, List
-from mlflow.pyfunc import PyFuncModel
-
 import warnings
+from typing import Any
+
 import mlflow
-import mlflow.sklearn
-import mlflow.pytorch
-import mlflow.tensorflow
 import mlflow.pyfunc
+import mlflow.pytorch
+import mlflow.sklearn
+import mlflow.tensorflow
+from mlflow.pyfunc import PyFuncModel
+from mlflow.tracking import MlflowClient
+
+from src.ssa.utils.logger import Logger as custom_logger
 
 
 class MLflowModelManager:
@@ -45,9 +46,9 @@ class MLflowModelManager:
     def __init__(
         self,
         model_name: str,
-        experiment_name: Optional[str] = None,
-        tracking_uri: Optional[str] = None,
-        artifact_location: Optional[str] = None,
+        experiment_name: str | None = None,
+        tracking_uri: str | None = None,
+        artifact_location: str | None = None,
         log_level: str = "WARNING",
     ):
         """
@@ -77,36 +78,30 @@ class MLflowModelManager:
                     experiment_name, artifact_location=artifact_location
                 )
                 self.logger.debug(f"Created new experiment: {experiment_name}")
-            except:
-                self.experiment_id = mlflow.get_experiment_by_name(
-                    experiment_name
-                ).experiment_id
-                self.logger.debug(
-                    f"Using existing experiment: {experiment_name} (ID: {self.experiment_id})"
-                )
+            except Exception:
+                self.experiment_id = mlflow.get_experiment_by_name(experiment_name).experiment_id
+                self.logger.debug(f"Using existing experiment: {experiment_name} (ID: {self.experiment_id})")
 
             mlflow.set_experiment(experiment_name)
             self.logger.info(f"MLFlow experiment configured: {experiment_name}")
         else:
             self.experiment_id = None
-            self.logger.info(
-                "Initialized in registry-only mode (no experiment configured)"
-            )
+            self.logger.info("Initialized in registry-only mode (no experiment configured)")
 
     def log_model(
         self,
         model: Any,
-        params: Dict[str, Any],
-        metrics: Dict[str, float],
+        params: dict[str, Any],
+        metrics: dict[str, float],
         model_type: str = "sklearn",
         use_autolog: bool = False,
-        artifacts: Optional[Dict[str, str]] = None,
-        tags: Optional[Dict[str, str]] = None,
-        run_name: Optional[str] = None,
-        signature: Optional[Any] = None,
-        input_example: Optional[Any] = None,
-        pip_requirements: Optional[List[str]] = None,
-        code_paths: Optional[List[str]] = None,
+        artifacts: dict[str, str] | None = None,
+        tags: dict[str, str] | None = None,
+        run_name: str | None = None,
+        signature: Any | None = None,
+        input_example: Any | None = None,
+        pip_requirements: list[str] | None = None,
+        code_paths: list[str] | None = None,
     ) -> str:
         """
         Logs a trained model along with its parameters and metrics to MLFlow.
@@ -157,6 +152,7 @@ class MLflowModelManager:
                 warnings.warn(
                     f"Autolog not supported for model_type '{model_type}'.Falling back to manual logging",
                     UserWarning,
+                    stacklevel=2,
                 )
 
         with mlflow.start_run(run_name=run_name) as run:
@@ -212,14 +208,19 @@ class MLflowModelManager:
 
             elif model_type == "custom":
                 import pickle
+                import tempfile
+                from pathlib import Path
 
-                with open("/tmp/model.pkl", "wb") as f:
-                    pickle.dump(model, f)
-                mlflow.log_artifact("/tmp/model.pkl", name="model")
+                with tempfile.TemporaryDirectory() as tmp_dir:
+                    tmp_path = Path(tmp_dir) / "model.pkl"
+                    with open(tmp_path, "wb") as f:
+                        pickle.dump(model, f)
+                    mlflow.log_artifact(str(tmp_path), artifact_path="model")
 
             else:
                 raise ValueError(
-                    f"Unsupported model_type: {model_type}. Supported types: sklearn, pytorch, tensorflow, pyfunc or custom"
+                    f"Unsupported model_type: {model_type}. "
+                    "Supported types: sklearn, pytorch, tensorflow, pyfunc or custom"
                 )
 
             run_id = run.info.run_id
@@ -230,9 +231,9 @@ class MLflowModelManager:
     def register_model(
         self,
         run_id: str,
-        alias: Optional[str] = None,
-        description: Optional[str] = None,
-        tags: Optional[Dict[str, str]] = None,
+        alias: str | None = None,
+        description: str | None = None,
+        tags: dict[str, str] | None = None,
     ) -> str:
         """
         Registers a logged model in the MLFlow Model Registry.
@@ -257,16 +258,12 @@ class MLflowModelManager:
         self.logger.info(f"Registered model: {self.model_name} version {version}")
 
         if description:
-            self.client.update_model_version(
-                name=self.model_name, version=version, description=description
-            )
+            self.client.update_model_version(name=self.model_name, version=version, description=description)
             self.logger.debug(f"Set description for version {version}")
 
         if tags:
             for key, value in tags.items():
-                self.client.set_model_version_tag(
-                    name=self.model_name, version=version, key=key, value=value
-                )
+                self.client.set_model_version_tag(name=self.model_name, version=version, key=key, value=value)
             self.logger.debug(f"Set {len(tags)} tags for version {version}")
 
         if alias:
@@ -276,9 +273,9 @@ class MLflowModelManager:
 
     def load_model(
         self,
-        version: Optional[str] = None,
-        alias: Optional[str] = None,
-        run_id: Optional[str] = None,
+        version: str | None = None,
+        alias: str | None = None,
+        run_id: str | None = None,
     ) -> PyFuncModel:
         """
         Loads a model from the MLFlow Model Registry.
@@ -326,9 +323,7 @@ class MLflowModelManager:
             version: Version number to assign the alias to.
             alias: Alias name to set
         """
-        self.client.set_registered_model_alias(
-            name=self.model_name, alias=alias, version=version
-        )
+        self.client.set_registered_model_alias(name=self.model_name, alias=alias, version=version)
         self.logger.info(f"Set alias '{alias}' to version {version}")
 
     def delete_alias(self, alias: str) -> None:
@@ -343,7 +338,7 @@ class MLflowModelManager:
         self.client.delete_registered_model_alias(name=self.model_name, alias=alias)
         self.logger.info(f"Deleted alias: {alias}")
 
-    def list_versions(self) -> List[Dict[str, Any]]:
+    def list_versions(self) -> list[dict[str, Any]]:
         """
         Lists all registered versions of the model with their metadata.
 
@@ -371,7 +366,7 @@ class MLflowModelManager:
         self.logger.debug(f"Found {len(result)} versions")
         return result
 
-    def get_model_by_alias(self, alias: str) -> Optional[Dict[str, Any]]:
+    def get_model_by_alias(self, alias: str) -> dict[str, Any] | None:
         """
         Retrieves metadata for the model version with a specific alias.
 
@@ -441,7 +436,5 @@ class MLflowModelManager:
             version: Version number to update.
             description: New description text.
         """
-        self.client.update_model_version(
-            name=self.model_name, version=version, description=description
-        )
+        self.client.update_model_version(name=self.model_name, version=version, description=description)
         self.logger.info(f"Updated description for version {version}")

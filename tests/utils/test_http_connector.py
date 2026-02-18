@@ -1,8 +1,10 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
 import requests
-from unittest.mock import Mock, patch, MagicMock
+
 from src.ssa.utils.http_connector import HTTPConnector
-from requests.adapters import Retry, HTTPAdapter
+
 
 class TestHTTPConnector:
     """Test suite for HTTPConnector class."""
@@ -41,7 +43,7 @@ class TestHTTPConnector:
     def test_init(self):
         """Test HTTPConnector initialization with default values."""
         connector = HTTPConnector(base_url=self.base_url)
-        
+
         assert connector.base_url == self.base_url
         assert connector.auth_token is None
         assert connector.default_headers == {}
@@ -60,7 +62,7 @@ class TestHTTPConnector:
             backoff_factor=0.5,
             status_forcelist=[500, 503],
         )
-        
+
         assert connector.base_url == self.base_url
         assert connector.auth_token == "test-token"
         assert connector.default_headers == {"Custom-Header": "value"}
@@ -76,10 +78,7 @@ class TestHTTPConnector:
             (
                 {"base_url": self.base_url},
                 None,
-                {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                }
+                {"Content-Type": "application/json", "Accept": "application/json"},
             ),
             (
                 {"base_url": self.base_url, "auth_token": "test-token"},
@@ -87,8 +86,8 @@ class TestHTTPConnector:
                 {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
-                    "Authorization": "Bearer test-token"
-                }
+                    "Authorization": "Bearer test-token",
+                },
             ),
             (
                 {"base_url": self.base_url, "headers": {"X-Custom-Header": "default-value"}},
@@ -96,8 +95,8 @@ class TestHTTPConnector:
                 {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
-                    "X-Custom-Header": "default-value"
-                }
+                    "X-Custom-Header": "default-value",
+                },
             ),
             (
                 {"base_url": self.base_url},
@@ -105,8 +104,8 @@ class TestHTTPConnector:
                 {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
-                    "X-Additional-Header": "additional-value"
-                }
+                    "X-Additional-Header": "additional-value",
+                },
             ),
             (
                 {"base_url": self.base_url, "headers": {"X-Custom-Header": "default-value"}},
@@ -114,8 +113,8 @@ class TestHTTPConnector:
                 {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
-                    "X-Custom-Header": "override-value"
-                }
+                    "X-Custom-Header": "override-value",
+                },
             ),
         ]
 
@@ -130,7 +129,7 @@ class TestHTTPConnector:
         mock_response = self._create_mock_response(
             status_code=400,
             text="Bad Request",
-            raise_for_status=requests.exceptions.HTTPError("400 Bad Request")
+            raise_for_status=requests.exceptions.HTTPError("400 Bad Request"),
         )
         mock_session_instance = self._setup_mock_session(mock_session, mock_response)
 
@@ -164,7 +163,7 @@ class TestHTTPConnector:
             url=f"{self.connector.base_url}/test-endpoint",
             headers=self.connector._get_headers(),
             params={"key": "value"},
-            data=None
+            data=None,
         )
 
     @patch("requests.Session.request")
@@ -181,7 +180,7 @@ class TestHTTPConnector:
             url=f"{self.connector.base_url}/test-endpoint",
             headers=self.connector._get_headers(),
             params=None,
-            data=data
+            data=data,
         )
 
     @patch("requests.Session.request")
@@ -198,7 +197,7 @@ class TestHTTPConnector:
             url=f"{self.connector.base_url}/test-endpoint",
             headers=self.connector._get_headers(),
             params=None,
-            data=data
+            data=data,
         )
 
     @patch("requests.Session.request")
@@ -215,7 +214,7 @@ class TestHTTPConnector:
             url=f"{self.connector.base_url}/test-endpoint",
             headers=self.connector._get_headers(),
             params=None,
-            data=data
+            data=data,
         )
 
     @patch("requests.Session.request")
@@ -231,7 +230,7 @@ class TestHTTPConnector:
             url=f"{self.connector.base_url}/test-endpoint",
             headers=self.connector._get_headers(),
             params=None,
-            data=None
+            data=None,
         )
 
     @patch("requests.Session.request")
@@ -242,7 +241,7 @@ class TestHTTPConnector:
 
         endpoints = ["endpoint1", "endpoint2", "endpoint3"]
         responses = self.connector.get_multiple(endpoints)
-        
+
         assert len(responses) == 3
         assert all(r.status_code == 200 for r in responses)
         assert mock_request.call_count == 3
@@ -256,7 +255,7 @@ class TestHTTPConnector:
         endpoints = ["endpoint1", "endpoint2"]
         data_list = [{"key1": "value1"}, {"key2": "value2"}]
         responses = self.connector.post_multiple(endpoints, data_list=data_list)
-        
+
         assert len(responses) == 2
         assert all(r.status_code == 201 for r in responses)
         assert mock_request.call_count == 2
@@ -270,7 +269,7 @@ class TestHTTPConnector:
         endpoints = ["endpoint1", "endpoint2"]
         data_list = [{"key1": "value1"}, {"key2": "value2"}]
         responses = self.connector.put_multiple(endpoints, data_list=data_list)
-        
+
         assert len(responses) == 2
         assert all(r.status_code == 200 for r in responses)
         assert mock_request.call_count == 2
@@ -284,7 +283,7 @@ class TestHTTPConnector:
         endpoints = ["endpoint1", "endpoint2"]
         data_list = [{"key1": "value1"}, {"key2": "value2"}]
         responses = self.connector.patch_multiple(endpoints, data_list=data_list)
-        
+
         assert len(responses) == 2
         assert all(r.status_code == 200 for r in responses)
         assert mock_request.call_count == 2
@@ -297,7 +296,7 @@ class TestHTTPConnector:
 
         endpoints = ["endpoint1", "endpoint2"]
         responses = self.connector.delete_multiple(endpoints)
-        
+
         assert len(responses) == 2
         assert all(r.status_code == 200 for r in responses)
         assert mock_request.call_count == 2
@@ -311,14 +310,11 @@ class TestHTTPConnector:
         endpoints = ["endpoint1", "endpoint2"]
         headers_list = [{"Header1": "value1"}, {"Header2": "value2"}]
         params_list = [{"param1": "value1"}, {"param2": "value2"}]
-        
+
         responses = self.connector._request_multiple(
-            "GET",
-            endpoints,
-            headers_list=headers_list,
-            params_list=params_list
+            "GET", endpoints, headers_list=headers_list, params_list=params_list
         )
-        
+
         assert len(responses) == 2
         assert all(r.status_code == 200 for r in responses)
         assert mock_request.call_count == 2

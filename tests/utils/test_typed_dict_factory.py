@@ -53,13 +53,9 @@ class TestTypedDictFactory(unittest.TestCase):
         additional attributes not defined in the factory are provided.
         """
         new_factory = TypedDictFactory([("country", str)])
-        instance = new_factory.create_instance(
-            country="US", vendor_id={"mondelez": "12345"}
-        )
+        instance = new_factory.create_instance(country="US", vendor_id={"mondelez": "12345"})
 
-        self.assertDictEqual(
-            instance, {"country": "US", "vendor_id": {"mondelez": "12345"}}
-        )
+        self.assertDictEqual(instance, {"country": "US", "vendor_id": {"mondelez": "12345"}})
 
     def test_multiple_instances(self):
         """
@@ -205,7 +201,7 @@ class TestTypedDictFactory(unittest.TestCase):
         attempting to create a factory instance without required attributes.
         """
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(TypeError):
             str(TypedDictFactory())
 
     def test_pop_method(self):
