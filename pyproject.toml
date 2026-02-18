@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ssa-sports-statistics-analysis"
-version = "0.1.0"
+version = "0.1.1"
 description = "Sports statistics prediction system for betting using machine learning"
 authors = ["Adriano Lima <adrianocardoso1991@gmail.com>"]
 license = "GPL-3.0-or-later"

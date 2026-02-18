@@ -2,6 +2,48 @@
 
 <!-- version list -->
 
+## v0.1.1 (2026-02-18)
+
+### Bug Fixes
+
+- Removed --no-root parameter in test workflow
+  ([#20](https://github.com/acardosolima/sports_betting/pull/20),
+  [`02002e3`](https://github.com/acardosolima/sports_betting/commit/02002e3f37c436557fee9cdde49f1169a02d655a))
+
+### Build System
+
+- Added pytest config to pre-commit ([#20](https://github.com/acardosolima/sports_betting/pull/20),
+  [`02002e3`](https://github.com/acardosolima/sports_betting/commit/02002e3f37c436557fee9cdde49f1169a02d655a))
+
+- Disabled passcode verification for test files
+  ([#20](https://github.com/acardosolima/sports_betting/pull/20),
+  [`02002e3`](https://github.com/acardosolima/sports_betting/commit/02002e3f37c436557fee9cdde49f1169a02d655a))
+
+- Increased the line limit ([#20](https://github.com/acardosolima/sports_betting/pull/20),
+  [`02002e3`](https://github.com/acardosolima/sports_betting/commit/02002e3f37c436557fee9cdde49f1169a02d655a))
+
+- Setup pre-commit ([#20](https://github.com/acardosolima/sports_betting/pull/20),
+  [`02002e3`](https://github.com/acardosolima/sports_betting/commit/02002e3f37c436557fee9cdde49f1169a02d655a))
+
+### Chores
+
+- Added GPLv3 license and updated metadata
+  ([#20](https://github.com/acardosolima/sports_betting/pull/20),
+  [`02002e3`](https://github.com/acardosolima/sports_betting/commit/02002e3f37c436557fee9cdde49f1169a02d655a))
+
+- Added GPLv3 license and updated metadata
+  ([#19](https://github.com/acardosolima/sports_betting/pull/19),
+  [`b1e78eb`](https://github.com/acardosolima/sports_betting/commit/b1e78eb5b619daa20e5764f4bbcabf901d5bc5bd))
+
+- Remove .vscode from tracking ([#20](https://github.com/acardosolima/sports_betting/pull/20),
+  [`02002e3`](https://github.com/acardosolima/sports_betting/commit/02002e3f37c436557fee9cdde49f1169a02d655a))
+
+### Code Style
+
+- Apply ruff linting fixes ([#20](https://github.com/acardosolima/sports_betting/pull/20),
+  [`02002e3`](https://github.com/acardosolima/sports_betting/commit/02002e3f37c436557fee9cdde49f1169a02d655a))
+
+
 ## v0.1.0 (2026-02-17)
 
 ### Bug Fixes
